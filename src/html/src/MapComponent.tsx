@@ -4,9 +4,9 @@ import type {
   LatLngExpression,
   LatLngLiteral,
   Map as LeafletMap,
-} from "leaflet";
-import "leaflet/dist/leaflet.css";
-import React, { useEffect, useState } from "react";
+} from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import React, {useEffect, useState} from 'react';
 import {
   ImageOverlay,
   ImageOverlayProps,
@@ -16,16 +16,16 @@ import {
   TileLayerProps,
   WMSTileLayer,
   WMSTileLayerProps,
-} from "react-leaflet";
-import Measure from "react-measure";
-import "./styles/markers.css";
-import { ExpoLeafletProps } from "./Leaflet.types";
-import { MapMarkers } from "./MapMarkers";
-import { MapShapes } from "./MapShapes";
-import { MapLayer } from "./model";
-import EventHandle from "./EventHandle";
+} from 'react-leaflet';
+import Measure from 'react-measure';
+import './styles/markers.css';
+import {ExpoLeafletProps} from './Leaflet.types';
+import {MapMarkers} from './MapMarkers';
+import {MapShapes} from './MapShapes';
+import {MapLayer} from './model';
+import EventHandle from './EventHandle';
 
-const { BaseLayer } = LayersControl;
+const {BaseLayer} = LayersControl;
 
 interface MapLayersProps {
   mapLayers: Array<MapLayer>;
@@ -33,9 +33,9 @@ interface MapLayersProps {
 
 const Layer = (props: MapLayer): JSX.Element => {
   switch (props.layerType) {
-    case "ImageOverlay":
+    case 'ImageOverlay':
       return <ImageOverlay {...(props as ImageOverlayProps)} />;
-    case "WMSTileLayer":
+    case 'WMSTileLayer':
       return <WMSTileLayer {...(props as WMSTileLayerProps)} />;
     default:
       return <TileLayer {...(props as TileLayerProps)} />;
@@ -43,7 +43,7 @@ const Layer = (props: MapLayer): JSX.Element => {
 };
 
 const MapLayers = (props: MapLayersProps) => {
-  const { mapLayers } = props;
+  const {mapLayers} = props;
   const Wrap = mapLayers.length > 1 ? LayersControl : React.Fragment;
   return (
     <Wrap>
@@ -53,8 +53,7 @@ const MapLayers = (props: MapLayersProps) => {
             <BaseLayer
               key={`layer-${index}`}
               checked={layer.baseLayerIsChecked || false}
-              name={layer.baseLayerName || `Layer.${index}`}
-            >
+              name={layer.baseLayerName || `Layer.${index}`}>
               <Layer {...layer} />
             </BaseLayer>
           );
@@ -95,8 +94,10 @@ export const MapComponent = (props: ExpoLeafletProps) => {
     mapShapes = [],
     onMessage,
     zoom = 13,
+    maxZoom = 20,
+    minZoom = 11,
   } = props;
-  const [dimensions, setDimensions] = useState({ height: 0, width: 0 });
+  const [dimensions, setDimensions] = useState({height: 0, width: 0});
   // const [mapRef, setMapRef] = useState<LeafletMap | null>(null);
   // useEffect(() => {
   //   if (props.mapCenterPosition || props.zoom) {
@@ -113,39 +114,37 @@ export const MapComponent = (props: ExpoLeafletProps) => {
   return (
     <Measure
       bounds
-      onResize={(contentRect) => {
+      onResize={contentRect => {
         if (contentRect.bounds) {
-          const { height, width } = contentRect.bounds;
-          setDimensions({ height, width });
+          const {height, width} = contentRect.bounds;
+          setDimensions({height, width});
         }
-      }}
-    >
-      {({ measureRef }) => (
+      }}>
+      {({measureRef}) => (
         <div
           ref={measureRef}
           id="map-container"
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             bottom: 0,
             backgroundColor: props.backgroundColor,
             left: 0,
             right: 0,
-          }}
-        >
+          }}>
           {dimensions.height > 0 && (
             <MapContainer
               {...props.mapOptions}
               whenReady={() => {
                 // setMapRef(map);
 
-                onMessage({ tag: "MapReady", version: "1.0.2" });
+                onMessage({tag: 'MapReady', version: '1.0.2'});
               }}
               center={mapCenterPosition as LatLngExpression}
-              maxZoom={props.maxZoom ?? 20}
+              maxZoom={maxZoom}
+              minZoom={minZoom}
               zoom={zoom}
-              style={{ width: "100%", height: dimensions.height }}
-            >
+              style={{width: '100%', height: dimensions.height}}>
               <EventHandle
                 onMessage={onMessage}
                 toLatLngLiteral={toLatLngLiteral}
@@ -155,9 +154,9 @@ export const MapComponent = (props: ExpoLeafletProps) => {
               <MapLayers mapLayers={mapLayers} />
               <MapMarkers
                 mapMarkers={mapMarkers}
-                onClick={(mapMarkerId) => {
+                onClick={mapMarkerId => {
                   onMessage({
-                    tag: "onMapMarkerClicked",
+                    tag: 'onMapMarkerClicked',
                     mapMarkerId,
                   });
                 }}
